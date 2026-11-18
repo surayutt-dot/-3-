@@ -190,26 +190,52 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- 2. INSTRUCTOR VIEW (เมนูสำหรับอาจารย์) -->
+    <!-- 2. INSTRUCTOR VIEW (เมนูสำหรับอาจารย์ - มีระบบล็อกรหัสผ่าน) -->
     <!-- ========================================== -->
-    <div id="instructorView" class="hidden flex-1 space-y-6">
+    <div id="instructorView" class="hidden flex-1 flex flex-col">
 
-      <!-- Banner Header -->
-      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Instructor Console</span>
-            <span class="text-xs text-slate-400">• Standalone & GitHub Pages Ready</span>
-          </div>
-          <h2 class="text-xl font-bold text-slate-800 mt-1">แผงควบคุมและเครื่องมือสำหรับอาจารย์ผู้สอน</h2>
-          <p class="text-xs text-slate-500">วิชาการจัดการเชิงกลยุทธ์ บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก</p>
+      <!-- PIN Lock Screen (ด่านความปลอดภัยป้องกันนักศึกษาเข้ามาดูเฉลย) -->
+      <div id="instructorPinScreen" class="max-w-md mx-auto my-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-8 text-center">
+        <div class="w-14 h-14 bg-indigo-50 text-indigo-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+          🔒
         </div>
-        <div class="flex items-center gap-2">
-          <button onclick="switchTab('student')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-1.5">
-            <span>👁️</span> กลับไปดูหน้าจอนักศึกษา
+        <h3 class="text-xl font-bold text-slate-800">สำหรับอาจารย์ผู้สอน</h3>
+        <p class="text-xs text-slate-500 mt-1 mb-5">กรุณากรอกรหัสผ่านเพื่อเข้าสู่แผงควบคุมและดูเฉลย</p>
+        
+        <div class="space-y-3.5">
+          <div>
+            <label class="block text-left text-xs font-semibold text-slate-600 mb-1">รหัสผ่านอาจารย์ผู้สอน</label>
+            <input type="password" id="instructorPinInput" placeholder="กรอกรหัสผ่านอาจารย์" class="w-full px-4 py-3 text-center tracking-widest text-lg font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500" onkeydown="if(event.key==='Enter') unlockInstructor()">
+          </div>
+          <button onclick="unlockInstructor()" class="w-full bg-indigo-900 hover:bg-indigo-950 text-white font-semibold py-3.5 rounded-xl shadow transition text-sm">
+            เข้าสู่ระบบแผงควบคุม
           </button>
+          <p id="pinError" class="hidden text-xs text-rose-600 font-semibold mt-1">❌ รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
         </div>
       </div>
+
+      <!-- Instructor Content (ซ่อนอยู่จนกว่าจะใส่รหัสผ่านถูกต้อง) -->
+      <div id="instructorContent" class="hidden space-y-6">
+
+        <!-- Banner Header -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Instructor Console</span>
+              <span class="text-xs text-slate-400">• ป้องกันด้วยรหัสผ่านแล้ว</span>
+            </div>
+            <h2 class="text-xl font-bold text-slate-800 mt-1">แผงควบคุมและเครื่องมือสำหรับอาจารย์ผู้สอน</h2>
+            <p class="text-xs text-slate-500">วิชาการจัดการเชิงกลยุทธ์ บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="lockInstructor()" class="px-3.5 py-2 bg-slate-100 hover:bg-rose-50 hover:text-rose-700 text-slate-600 text-xs font-semibold rounded-xl border border-slate-200 transition flex items-center gap-1.5">
+              <span>🔒</span> ล็อกหน้าอาจารย์
+            </button>
+            <button onclick="switchTab('student')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-1.5">
+              <span>👁️</span> กลับไปดูหน้าจอนักศึกษา
+            </button>
+          </div>
+        </div>
 
       <!-- Grid 2 Columns: Tool 1 (Token Verifier) & Tool 2 (AI Settings) -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -362,7 +388,9 @@
         </div>
       </div>
 
-    </div>
+      </div> <!-- /#instructorContent -->
+
+    </div> <!-- /#instructorView -->
 
   </main>
 
@@ -383,6 +411,9 @@
 📌 **ขั้นที่ 1: การวิเคราะห์ระดับมหภาค (PESTEL)**
 จากเนื้อหา หมึกกรุบทำรายได้โตถึง 471% (เกือบ 2,000 ล้านบาท) ในปี 2568 น้องคิดว่า **ปัจจัยภายนอกด้านใดใน PESTEL (P, E, S, T, E, L)** ที่เป็นลมใต้ปีกสำคัญที่สุดที่ทำให้หมึกกรุบแจ้งเกิดได้เร็วขนาดนี้? ลองเลือกมา 1-2 ด้านพร้อมอธิบายเหตุผลให้พี่ฟังสักนิดครับ!`;
 
+    let isInstructorUnlocked = false;
+    const INSTRUCTOR_PIN = '1235'; // รหัสผ่านสำหรับอาจารย์ (อัปเดตใหม่)
+
     // Switch between Student and Instructor Tabs
     function switchTab(tab) {
       const studentView = document.getElementById('studentView');
@@ -400,7 +431,41 @@
         instructorView.classList.remove('hidden');
         navInstructorBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white shadow";
         navStudentBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition text-indigo-200 hover:text-white";
+
+        // Check if unlocked
+        if (isInstructorUnlocked) {
+          document.getElementById('instructorPinScreen').classList.add('hidden');
+          document.getElementById('instructorContent').classList.remove('hidden');
+          renderCompletedStudents();
+        } else {
+          document.getElementById('instructorPinScreen').classList.remove('hidden');
+          document.getElementById('instructorContent').classList.add('hidden');
+          document.getElementById('pinError').classList.add('hidden');
+          setTimeout(() => document.getElementById('instructorPinInput').focus(), 100);
+        }
       }
+    }
+
+    function unlockInstructor() {
+      const enteredPin = document.getElementById('instructorPinInput').value.trim();
+      const pinErr = document.getElementById('pinError');
+
+      if (enteredPin === INSTRUCTOR_PIN) {
+        isInstructorUnlocked = true;
+        document.getElementById('instructorPinInput').value = '';
+        pinErr.classList.add('hidden');
+        document.getElementById('instructorPinScreen').classList.add('hidden');
+        document.getElementById('instructorContent').classList.remove('hidden');
+        renderCompletedStudents();
+      } else {
+        pinErr.classList.remove('hidden');
+        document.getElementById('instructorPinInput').select();
+      }
+    }
+
+    function lockInstructor() {
+      isInstructorUnlocked = false;
+      switchTab('student');
     }
 
     function startActivity() {
