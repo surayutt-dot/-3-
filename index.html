@@ -15,9 +15,9 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- Header -->
+  <!-- Header & Navigation Bar -->
   <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <div class="w-10 h-10 rounded-xl bg-indigo-500/30 border border-indigo-400 flex items-center justify-center text-xl font-bold shadow-inner">
           🎓
@@ -26,189 +26,317 @@
           <h1 class="text-base md:text-lg font-bold leading-tight flex items-center gap-2">
             พี่ TA กลยุทธ์ <span class="text-[10px] md:text-xs bg-indigo-500/40 text-indigo-200 px-2 py-0.5 rounded-full font-normal">Socratic Method</span>
           </h1>
-          <p class="text-[11px] md:text-xs text-indigo-200">วิชาการจัดการเชิงกลยุทธ์ บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก</p>
+          <p class="text-[11px] md:text-xs text-indigo-200">บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก • คณะวิทยาการจัดการ</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 text-xs">
-        <button onclick="toggleVerifyModal()" class="text-indigo-200 hover:text-white bg-indigo-950/60 px-3 py-1.5 rounded-lg border border-indigo-700/50 transition">
-          🔍 ตรวจสอบรหัส Token
+
+      <!-- Tab Switcher (เหมือนอันเดิม) -->
+      <div class="flex items-center bg-indigo-950/60 p-1 rounded-xl text-xs md:text-sm">
+        <button id="navStudentBtn" onclick="switchTab('student')" class="px-3.5 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white shadow">
+          👩‍🎓 สำหรับนักศึกษา
+        </button>
+        <button id="navInstructorBtn" onclick="switchTab('instructor')" class="px-3.5 py-1.5 rounded-lg font-medium transition text-indigo-200 hover:text-white">
+          👨‍🏫 อาจารย์ / ตรวจสอบ & จัดการ
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col">
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6 flex flex-col">
 
-    <!-- 1. Student Login Screen -->
-    <div id="loginScreen" class="max-w-lg mx-auto my-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
-      <div class="text-center mb-6">
-        <div class="inline-block p-4 bg-indigo-50 text-indigo-600 rounded-2xl text-3xl mb-3 shadow-inner">
-          💡
+    <!-- ========================================== -->
+    <!-- 1. STUDENT VIEW -->
+    <!-- ========================================== -->
+    <div id="studentView" class="flex-1 flex flex-col">
+      
+      <!-- Student Login Screen -->
+      <div id="loginScreen" class="max-w-lg mx-auto my-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
+        <div class="text-center mb-6">
+          <div class="inline-block p-4 bg-indigo-50 text-indigo-600 rounded-2xl text-3xl mb-3 shadow-inner">
+            💡
+          </div>
+          <h2 class="text-2xl font-bold text-slate-800">เข้าสู่ห้องฝึกคิดวิเคราะห์</h2>
+          <p class="text-xs md:text-sm text-slate-500 mt-1">กรอกข้อมูลเพื่อเริ่มทำกิจกรรมและรับรหัสยืนยันคะแนน</p>
         </div>
-        <h2 class="text-2xl font-bold text-slate-800">เข้าสู่ห้องฝึกคิดวิเคราะห์</h2>
-        <p class="text-xs md:text-sm text-slate-500 mt-1">กรอกข้อมูลเพื่อเริ่มทำกิจกรรมและรับรหัสยืนยันคะแนน</p>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">รหัสนักศึกษา (Student ID) *</label>
+            <input type="text" id="inputStudentId" placeholder="เช่น 6512345678" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ชื่อ - นามสกุล *</label>
+            <input type="text" id="inputStudentName" placeholder="เช่น นายวริศ ธรรมศาสตร์" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">หมู่เรียน (Section)</label>
+            <select id="inputSection" class="w-full px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+              <option value="Sec 1">Section 1</option>
+              <option value="Sec 2">Section 2</option>
+              <option value="Sec 3">Section 3</option>
+            </select>
+          </div>
+
+          <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-800 leading-relaxed">
+            <span class="font-bold">📌 กฎของกิจกรรม:</span> พี่ TA จะไม่บอกเฉลยคำตอบตรง ๆ แต่จะชวนคิด 5 ขั้นตอน เมื่อผ่านครบทุกข้อ ระบบจะออก <strong>"บัตรยืนยันผ่านด่านพร้อมรหัส Token"</strong> ให้แคปเจอร์ส่งอาจารย์ครับ
+          </div>
+
+          <button onclick="startActivity()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center gap-2">
+            <span>เริ่มคุยกับพี่ TA (ด่านที่ 1)</span>
+            <span>→</span>
+          </button>
+        </div>
       </div>
 
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">รหัสนักศึกษา (Student ID) *</label>
-          <input type="text" id="inputStudentId" placeholder="เช่น 6512345678" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+      <!-- Chat Screen -->
+      <div id="chatScreen" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-130px)]">
+        
+        <!-- Left Sidebar: Info & Cheatsheet -->
+        <div class="w-full md:w-72 bg-white rounded-2xl border border-slate-200 p-4 flex flex-col shadow-sm overflow-y-auto">
+          <div class="pb-3 border-b border-slate-100 mb-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full" id="labelSection">Sec 1</span>
+              <button onclick="resetActivity()" class="text-xs text-slate-400 hover:text-rose-500">เริ่มใหม่</button>
+            </div>
+            <h3 class="font-bold text-slate-800 mt-1" id="labelName">นายวริศ</h3>
+            <p class="text-xs text-slate-500 font-mono" id="labelId">รหัส 6512345678</p>
+          </div>
+
+          <!-- Success Certificate Card -->
+          <div id="certCard" class="hidden mb-3 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-xl p-4 text-white shadow-md">
+            <div class="text-center">
+              <span class="text-2xl">🏆</span>
+              <h4 class="font-bold text-sm mt-1">ผ่านภารกิจบทที่ 3 แล้ว!</h4>
+              <p class="text-[11px] text-emerald-100 mt-0.5">บันทึกรหัสนี้หรือแคปหน้าจอส่งอาจารย์:</p>
+              <div id="tokenText" class="bg-white/20 border border-white/40 text-white font-mono font-bold text-center py-1.5 px-2 rounded-lg text-sm mt-2 select-all tracking-wider">
+                MGMT3-XXXXXX
+              </div>
+              <button onclick="copyToken()" class="mt-2 text-[10px] bg-white text-emerald-800 font-semibold px-3 py-1 rounded-md shadow hover:bg-emerald-50 transition w-full">
+                📋 คัดลอกรหัส Token
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Cheatsheet -->
+          <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">💡 สรุปกรอบคิด บทที่ 3</h4>
+          <div class="space-y-2 text-xs text-slate-600 flex-1">
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <strong class="text-indigo-950 block mb-0.5">1. PESTEL (มหภาค)</strong>
+              P: การเมือง • E: ศก./เงินเฟ้อ • S: สังคม/สุขภาพ • T: TikTok/AI • E: Net Zero • L: กฎหมาย
+            </div>
+            <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+              <strong class="text-indigo-950 block mb-0.5">2. Five Forces (อุตสาหกรรม)</strong>
+              ผู้เข้าใหม่ • ผู้ซื้อ • ซัพพลายเออร์ • สินค้าทดแทน • การแข่งระหว่างคู่แข่งเดิม
+            </div>
+            <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+              <strong>⚠️ ห้ามสับสน:</strong> "โอกาส/อุปสรรค" ต้องเป็นปัจจัยภายนอกที่ควบคุมไม่ได้ (ห้ามตอบเรื่องเงินทุนหรือพนักงาน)
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ชื่อ - นามสกุล *</label>
-          <input type="text" id="inputStudentName" placeholder="เช่น นายวริศ ธรรมศาสตร์" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+        <!-- Right Chat Area -->
+        <div class="flex-1 bg-white rounded-2xl border border-slate-200 flex flex-col shadow-sm overflow-hidden">
+          
+          <!-- Stepper Header -->
+          <div class="px-4 py-3 bg-slate-100/70 border-b border-slate-200">
+            <div class="flex justify-between items-center mb-2">
+              <div>
+                <span class="text-[11px] font-semibold text-slate-500 uppercase">กรณีศึกษา:</span>
+                <h3 class="text-xs md:text-sm font-bold text-slate-800">BEARHOUSE กับ หมึกกรุบ (โตคนละจังหวะ)</h3>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-[11px] text-slate-600 font-medium">พี่ TA พร้อมตอบ</span>
+              </div>
+            </div>
+
+            <!-- 5 Steps Stepper -->
+            <div class="grid grid-cols-5 gap-1 pt-1 border-t border-slate-200">
+              <div id="step1" class="text-center py-1 px-1 rounded text-[10px] font-bold bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400">1. PESTEL</div>
+              <div id="step2" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">2. แยก O/T</div>
+              <div id="step3" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">3. Five Forces</div>
+              <div id="step4" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">4. ผู้เข้าใหม่</div>
+              <div id="step5" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">5. ฉากทัศน์</div>
+            </div>
+          </div>
+
+          <!-- Messages Box -->
+          <div id="messagesBox" class="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5"></div>
+
+          <!-- Input Box -->
+          <div class="p-3 md:p-4 border-t border-slate-200 bg-white">
+            <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2 px-1">
+              <span>💡 คิดวิเคราะห์และตอบตามหลักวิชาการ</span>
+              <span id="quotaPill" class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
+                สิทธิ์การพิมพ์: เหลือ <strong id="quotaCount" class="font-bold text-indigo-900">15</strong>/15
+              </span>
+            </div>
+            <form onsubmit="handleSend(event)" class="flex gap-2">
+              <input type="text" id="chatInput" placeholder="พิมพ์ความคิดเห็น หรือตอบคำถามพี่ TA ที่นี่..." class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+              <button type="submit" id="sendBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-3 rounded-xl shadow transition text-sm flex items-center gap-1">
+                <span>ส่ง</span>
+                <span>➤</span>
+              </button>
+            </form>
+          </div>
+
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">หมู่เรียน (Section)</label>
-          <select id="inputSection" class="w-full px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-            <option value="Sec 1">Section 1</option>
-            <option value="Sec 2">Section 2</option>
-            <option value="Sec 3">Section 3</option>
-          </select>
-        </div>
-
-        <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-800 leading-relaxed">
-          <span class="font-bold">📌 กฎของกิจกรรม:</span> พี่ TA จะไม่บอกเฉลยคำตอบตรง ๆ แต่จะชวนคิด 5 ขั้นตอน เมื่อผ่านครบทุกข้อ ระบบจะออก <strong>"บัตรยืนยันผ่านด่านพร้อมรหัส Token"</strong> ให้แคปเจอร์ส่งอาจารย์ครับ
-        </div>
-
-        <button onclick="startActivity()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center gap-2">
-          <span>เริ่มคุยกับพี่ TA (ด่านที่ 1)</span>
-          <span>→</span>
-        </button>
       </div>
+
     </div>
 
-    <!-- 2. Chat & Activity Screen -->
-    <div id="chatScreen" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-130px)]">
-      
-      <!-- Left Sidebar: Student Info & Cheatsheet -->
-      <div class="w-full md:w-72 bg-white rounded-2xl border border-slate-200 p-4 flex flex-col shadow-sm overflow-y-auto">
-        <div class="pb-3 border-b border-slate-100 mb-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full" id="labelSection">Sec 1</span>
-            <button onclick="resetActivity()" class="text-xs text-slate-400 hover:text-rose-500">เริ่มใหม่</button>
-          </div>
-          <h3 class="font-bold text-slate-800 mt-1" id="labelName">นายวริศ</h3>
-          <p class="text-xs text-slate-500 font-mono" id="labelId">รหัส 6512345678</p>
-        </div>
+    <!-- ========================================== -->
+    <!-- 2. INSTRUCTOR VIEW (เมนูสำหรับอาจารย์) -->
+    <!-- ========================================== -->
+    <div id="instructorView" class="hidden flex-1 space-y-6">
 
-        <!-- Success Certificate Card (Shown when passed) -->
-        <div id="certCard" class="hidden mb-3 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-xl p-4 text-white shadow-md">
-          <div class="text-center">
-            <span class="text-2xl">🏆</span>
-            <h4 class="font-bold text-sm mt-1">ผ่านภารกิจบทที่ 3 แล้ว!</h4>
-            <p class="text-[11px] text-emerald-100 mt-0.5">บันทึกรหัสนี้หรือแคปหน้าจอส่งอาจารย์:</p>
-            <div id="tokenText" class="bg-white/20 border border-white/40 text-white font-mono font-bold text-center py-1.5 px-2 rounded-lg text-sm mt-2 select-all tracking-wider">
-              MGMT3-XXXXXX
-            </div>
-            <button onclick="copyToken()" class="mt-2 text-[10px] bg-white text-emerald-800 font-semibold px-3 py-1 rounded-md shadow hover:bg-emerald-50 transition w-full">
-              📋 คัดลอกรหัส Token
-            </button>
+      <!-- Banner Header -->
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-2 py-0.5 rounded-full">Instructor Console</span>
+            <span class="text-xs text-slate-400">• Standalone & GitHub Pages Ready</span>
           </div>
+          <h2 class="text-xl font-bold text-slate-800 mt-1">แผงควบคุมและเครื่องมือสำหรับอาจารย์ผู้สอน</h2>
+          <p class="text-xs text-slate-500">วิชาการจัดการเชิงกลยุทธ์ บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก</p>
         </div>
-
-        <!-- Quick Cheatsheet -->
-        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">💡 สรุปกรอบคิด บทที่ 3</h4>
-        <div class="space-y-2 text-xs text-slate-600 flex-1">
-          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-            <strong class="text-indigo-950 block mb-0.5">1. PESTEL (มหภาค)</strong>
-            P: การเมือง • E: ศก./เงินเฟ้อ • S: สังคม/สุขภาพ • T: TikTok/AI • E: Net Zero • L: กฎหมาย
-          </div>
-          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
-            <strong class="text-indigo-950 block mb-0.5">2. Five Forces (อุตสาหกรรม)</strong>
-            ผู้เข้าใหม่ • ผู้ซื้อ • ซัพพลายเออร์ • สินค้าทดแทน • การแข่งระหว่างคู่แข่งเดิม
-          </div>
-          <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
-            <strong>⚠️ ห้ามสับสน:</strong> "โอกาส/อุปสรรค" ต้องเป็นปัจจัยภายนอกที่ควบคุมไม่ได้ (ห้ามตอบเรื่องเงินทุนหรือพนักงาน)
-          </div>
+        <div class="flex items-center gap-2">
+          <button onclick="switchTab('student')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-xl shadow transition flex items-center gap-1.5">
+            <span>👁️</span> กลับไปดูหน้าจอนักศึกษา
+          </button>
         </div>
       </div>
 
-      <!-- Right Chat Area -->
-      <div class="flex-1 bg-white rounded-2xl border border-slate-200 flex flex-col shadow-sm overflow-hidden">
-        
-        <!-- Stepper Header -->
-        <div class="px-4 py-3 bg-slate-100/70 border-b border-slate-200">
-          <div class="flex justify-between items-center mb-2">
-            <div>
-              <span class="text-[11px] font-semibold text-slate-500 uppercase">กรณีศึกษา:</span>
-              <h3 class="text-xs md:text-sm font-bold text-slate-800">BEARHOUSE กับ หมึกกรุบ (โตคนละจังหวะ)</h3>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span class="text-[11px] text-slate-600 font-medium">พี่ TA พร้อมตอบ</span>
-            </div>
-          </div>
+      <!-- Grid 2 Columns: Tool 1 (Token Verifier) & Tool 2 (AI Settings) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          <!-- 5 Steps -->
-          <div class="grid grid-cols-5 gap-1 pt-1 border-t border-slate-200">
-            <div id="step1" class="text-center py-1 px-1 rounded text-[10px] font-bold bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400">1. PESTEL</div>
-            <div id="step2" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">2. แยก O/T</div>
-            <div id="step3" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">3. Five Forces</div>
-            <div id="step4" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">4. ผู้เข้าใหม่</div>
-            <div id="step5" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">5. ฉากทัศน์</div>
+        <!-- Tool 1: Fast Token Verifier -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                🔍
+              </div>
+              <h3 class="font-bold text-slate-800 text-sm">เครื่องมือตรวจสอบความถูกต้องของ Token</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+              เมื่อนักศึกษาส่งรหัส Token (หรือแคปหน้าจอมาส่ง) อาจารย์สามารถนำ <strong>รหัสนักศึกษา</strong> และ <strong>รหัส Token</strong> มาใส่ที่นี่ เพื่อเช็กว่าทำผ่านจริงหรือไม่
+            </p>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสนักศึกษา</label>
+                <input type="text" id="verifyIdInput" placeholder="เช่น 6512345678" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">รหัส Token ที่นักศึกษานำมาส่ง</label>
+                <input type="text" id="verifyTokenInput" placeholder="เช่น MGMT3-XXXXXX" class="w-full px-3.5 py-2.5 text-xs font-mono font-bold rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+              </div>
+              <button onclick="checkStudentToken()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-3 rounded-xl shadow transition">
+                ตรวจสอบความถูกต้องทันที
+              </button>
+              <div id="verifyResult" class="hidden text-xs p-3.5 rounded-xl"></div>
+            </div>
           </div>
         </div>
 
-        <!-- Messages Box -->
-        <div id="messagesBox" class="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5"></div>
+        <!-- Tool 2: Google Gemini AI Settings -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                ⚙️
+              </div>
+              <h3 class="font-bold text-slate-800 text-sm">การตั้งค่า Google Gemini API (ไม่บังคับ)</h3>
+            </div>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+              ปัจจุบันระบบใช้ <strong>Strict Socratic Engine (ระบบประเมิน 5 ขั้นตอนในเบราว์เซอร์)</strong> ซึ่งทำงานได้สมบูรณ์แบบโดยไม่ต้องต่ออินเทอร์เน็ต แต่หากต้องการเปิดพลัง LLM เต็มรูปแบบ สามารถบันทึก API Key ไว้ในเครื่องนี้ได้ครับ
+            </p>
 
-        <!-- Input Box -->
-        <div class="p-3 md:p-4 border-t border-slate-200 bg-white">
-          <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2 px-1">
-            <span>💡 คิดวิเคราะห์และตอบตามหลักวิชาการ</span>
-            <span id="quotaPill" class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
-              สิทธิ์การพิมพ์: เหลือ <strong id="quotaCount" class="font-bold text-indigo-900">15</strong>/15
-            </span>
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1">Google Gemini API Key</label>
+                <input type="password" id="instructorApiKeyInput" placeholder="ใส่รหัส API Key จาก Google AI Studio" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+              </div>
+              <button onclick="saveClientApiKey()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 rounded-xl shadow transition">
+                บันทึกการตั้งค่า Key
+              </button>
+              <p class="text-[11px] text-slate-400 text-center">
+                คีย์จะถูกบันทึกอย่างปลอดภัยในเบราว์เซอร์นี้ (Local Storage)
+              </p>
+            </div>
           </div>
-          <form onsubmit="handleSend(event)" class="flex gap-2">
-            <input type="text" id="chatInput" placeholder="พิมพ์ความคิดเห็น หรือตอบคำถามพี่ TA ที่นี่..." class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
-            <button type="submit" id="sendBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-3 rounded-xl shadow transition text-sm flex items-center gap-1">
-              <span>ส่ง</span>
-              <span>➤</span>
-            </button>
-          </form>
         </div>
 
+      </div>
+
+      <!-- Tool 3: Teaching Notes & Rubrics (คู่มือเฉลยและเกณฑ์ 5 ขั้นตอนสำหรับอาจารย์) -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+            📖
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">คู่มือเกณฑ์การประเมิน 5 ขั้นตอน (Teaching Rubric)</h3>
+            <p class="text-xs text-slate-500">แนวทางที่ระบบใช้ในการตรวจสอบคำตอบของนักศึกษาในบทที่ 3</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-slate-100 text-slate-700 font-semibold uppercase">
+              <tr>
+                <th class="py-3 px-4 w-28">ขั้นตอน</th>
+                <th class="py-3 px-4 w-44">หัวข้อตามบทที่ 3</th>
+                <th class="py-3 px-4">เกณฑ์คำตอบที่ถูกต้อง</th>
+                <th class="py-3 px-4">หลุมพรางที่เด็กมักตอบผิด (ระบบจะช่วยเบรก)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-600">
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-indigo-700">ขั้นที่ 1</td>
+                <td class="py-3 px-4 font-medium text-slate-800">มหภาค (PESTEL)</td>
+                <td class="py-3 px-4">ระบุปัจจัย <strong>S (สุขภาพ/รสชาติ)</strong> หรือ <strong>T (TikTok/โซเชียล)</strong></td>
+                <td class="py-3 px-4 text-rose-600">ตอบปัจจัยภายใน เช่น "เงินทุนหนา" หรือ "พนักงานบริการดี"</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-indigo-700">ขั้นที่ 2</td>
+                <td class="py-3 px-4 font-medium text-slate-800">แยก O/T vs S/W</td>
+                <td class="py-3 px-4">ฟันธงว่าช่องยูทูบ Bearhug คือ <strong>"จุดแข็งภายใน (Strength)"</strong></td>
+                <td class="py-3 px-4 text-rose-600">ตอบว่าเป็น "โอกาส (Opportunity)" (ระบบจะเตือนและให้อธิบายใหม่)</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-indigo-700">ขั้นที่ 3</td>
+                <td class="py-3 px-4 font-medium text-slate-800">Five Forces (7-Eleven)</td>
+                <td class="py-3 px-4">ชี้ว่าชานมมี <strong>สินค้าทดแทนในตู้แช่มหาศาล</strong> แต่หมึกกรุบเป็น Category ใหม่</td>
+                <td class="py-3 px-4 text-slate-500">ตอบกว้าง ๆ เช่น "เพราะดวงดี" หรือ "ตั้งราคาไม่ดี"</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-indigo-700">ขั้นที่ 4</td>
+                <td class="py-3 px-4 font-medium text-slate-800">ผู้เข้าใหม่ & เกราะป้องกัน</td>
+                <td class="py-3 px-4">ชี้ว่า <strong>เข้าง่าย</strong> และต้องสร้าง <strong>Barriers to Entry</strong> (เช่น Brand, สัญญาล็อกวัตถุดิบ)</td>
+                <td class="py-3 px-4 text-rose-600">ตอบว่า "เข้ายาก" ทั้งที่ขนมก๊อปปี้สูตรง่ายมาก</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-indigo-700">ขั้นที่ 5</td>
+                <td class="py-3 px-4 font-medium text-slate-800">Scenario Planning</td>
+                <td class="py-3 px-4">เสนอ <strong>No-Regret Move</strong> (เช่น วิจัยรสอื่นกระจายความเสี่ยง, หาตลาดส่งออก)</td>
+                <td class="py-3 px-4 text-slate-500">ตอบแนวทางที่ไม่ชัดเจน หรือไม่สามารถปฏิบัติจริงได้</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
 
   </main>
 
-  <!-- Modal for Professor to Verify Student Tokens -->
-  <div id="verifyModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
-      <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
-          <span>🔍</span> เครื่องมือตรวจสอบรหัส Token
-        </h3>
-        <button onclick="toggleVerifyModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
-      </div>
-      <p class="text-xs text-slate-500 mb-3">
-        อาจารย์สามารถนำรหัสนักศึกษาและรหัส Token ที่เด็กส่งมา วางที่นี่เพื่อตรวจสอบความถูกต้องได้ทันทีครับ
-      </p>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสนักศึกษา</label>
-          <input type="text" id="verifyIdInput" placeholder="เช่น 6512345678" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">รหัส Token ที่เด็กส่งมา</label>
-          <input type="text" id="verifyTokenInput" placeholder="เช่น MGMT3-XXXXXX" class="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <button onclick="checkStudentToken()" class="w-full bg-indigo-900 hover:bg-indigo-950 text-white text-xs font-bold py-2.5 rounded-xl shadow transition">
-          ตรวจสอบทันที
-        </button>
-        <div id="verifyResult" class="hidden text-xs p-3 rounded-xl"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Socratic Engine Script (100% Client-Side for GitHub Pages) -->
+  <!-- Script Logic (Single HTML, GitHub Pages Compatible) -->
   <script>
     let student = { id: '', name: '', section: '' };
     let currentStep = 1;
@@ -224,6 +352,26 @@
 
 📌 **ขั้นที่ 1: การวิเคราะห์ระดับมหภาค (PESTEL)**
 จากเนื้อหา หมึกกรุบทำรายได้โตถึง 471% (เกือบ 2,000 ล้านบาท) ในปี 2568 น้องคิดว่า **ปัจจัยภายนอกด้านใดใน PESTEL (P, E, S, T, E, L)** ที่เป็นลมใต้ปีกสำคัญที่สุดที่ทำให้หมึกกรุบแจ้งเกิดได้เร็วขนาดนี้? ลองเลือกมา 1-2 ด้านพร้อมอธิบายเหตุผลให้พี่ฟังสักนิดครับ!`;
+
+    // Switch between Student and Instructor Tabs
+    function switchTab(tab) {
+      const studentView = document.getElementById('studentView');
+      const instructorView = document.getElementById('instructorView');
+      const navStudentBtn = document.getElementById('navStudentBtn');
+      const navInstructorBtn = document.getElementById('navInstructorBtn');
+
+      if (tab === 'student') {
+        studentView.classList.remove('hidden');
+        instructorView.classList.add('hidden');
+        navStudentBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white shadow";
+        navInstructorBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition text-indigo-200 hover:text-white";
+      } else {
+        studentView.classList.add('hidden');
+        instructorView.classList.remove('hidden');
+        navInstructorBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition bg-indigo-600 text-white shadow";
+        navStudentBtn.className = "px-3.5 py-1.5 rounded-lg font-medium transition text-indigo-200 hover:text-white";
+      }
+    }
 
     function startActivity() {
       const id = document.getElementById('inputStudentId').value.trim();
@@ -279,7 +427,6 @@
     }
 
     function updateUI() {
-      // Update Stepper Badges
       const names = ['1. PESTEL', '2. แยก O/T', '3. Five Forces', '4. ผู้เข้าใหม่', '5. ฉากทัศน์'];
       for (let i = 1; i <= 5; i++) {
         const badge = document.getElementById(`step${i}`);
@@ -297,7 +444,6 @@
         }
       }
 
-      // Quota & Lock
       const remain = Math.max(0, MAX_MESSAGES - messageCount);
       document.getElementById('quotaCount').innerText = remain;
 
@@ -336,7 +482,6 @@
       renderMessages();
       updateUI();
 
-      // Socratic Response Evaluation
       setTimeout(() => {
         const reply = evaluateSocraticAnswer(text);
         chatHistory.push({ role: 'assistant', text: reply });
@@ -507,7 +652,6 @@
 👉 *ช่วยระบุกลยุทธ์ที่เป็นรูปธรรมให้พี่ฟังอีกครั้งครับ!*`;
         }
 
-        // Passed!
         isPassed = true;
         generatedToken = generateSecureToken(student.id);
 
@@ -547,12 +691,7 @@
       }
     }
 
-    // Professor Verification Tool
-    function toggleVerifyModal() {
-      document.getElementById('verifyModal').classList.toggle('hidden');
-      document.getElementById('verifyResult').classList.add('hidden');
-    }
-
+    // Professor Verification Function
     function checkStudentToken() {
       const id = document.getElementById('verifyIdInput').value.trim();
       const token = document.getElementById('verifyTokenInput').value.trim().toUpperCase();
@@ -567,13 +706,31 @@
       resDiv.classList.remove('hidden');
 
       if (token === expectedToken) {
-        resDiv.className = 'text-xs p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-medium';
-        resDiv.innerHTML = `✅ <strong>รหัสถูกต้อง 100%!</strong><br>รหัส Token <code>${token}</code> นี้ถูกสร้างขึ้นจริงจากการตอบผ่านครบ 5 ด่านของรหัสนักศึกษา <strong>${id}</strong>`;
+        resDiv.className = 'text-xs p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-medium leading-relaxed';
+        resDiv.innerHTML = `✅ <strong>รหัสถูกต้อง 100%!</strong><br>รหัส Token <code>${token}</code> นี้ตรงกับรหัสนักศึกษา <strong>${id}</strong> จริง และผ่านการคิดครบ 5 ขั้นตอนเรียบร้อยครับ`;
       } else {
-        resDiv.className = 'text-xs p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 font-medium';
+        resDiv.className = 'text-xs p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 font-medium leading-relaxed';
         resDiv.innerHTML = `❌ <strong>รหัสไม่ถูกต้อง!</strong><br>รหัส Token <code>${token}</code> ไม่ตรงกับรหัสนักศึกษา ${id} (อาจพิมพ์ผิด หรือไม่ใช่รหัสจริง)`;
       }
     }
+
+    // Save Client-Side API Key in LocalStorage
+    function saveClientApiKey() {
+      const key = document.getElementById('instructorApiKeyInput').value.trim();
+      if (!key) {
+        alert('กรุณาใส่ API Key ก่อนกดบันทึกครับ');
+        return;
+      }
+      localStorage.setItem('GEMINI_API_KEY', key);
+      alert('บันทึก API Key ในเบราว์เซอร์นี้เรียบร้อยแล้ว!');
+    }
+
+    window.onload = function() {
+      const savedKey = localStorage.getItem('GEMINI_API_KEY');
+      if (savedKey) {
+        document.getElementById('instructorApiKeyInput').placeholder = '•••••••••••••••••••••••••••• (บันทึกคีย์แล้ว)';
+      }
+    };
   </script>
 </body>
 </html>
