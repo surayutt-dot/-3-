@@ -163,6 +163,15 @@
             </div>
           </div>
 
+          <!-- AI Engine Status Badge -->
+          <div class="bg-indigo-50/60 px-4 py-1.5 border-b border-indigo-100/60 flex justify-between items-center text-[10px] text-indigo-900">
+            <span class="flex items-center gap-1.5 font-medium">
+              <span id="aiStatusDot" class="w-1.5 h-1.5 rounded-full bg-indigo-600"></span>
+              <span id="aiStatusText">สมอง AI: กำลังเตรียมพร้อม...</span>
+            </span>
+            <span class="text-slate-400 font-mono">Cognitive Socratic Agent v2.0</span>
+          </div>
+
           <!-- Messages Box -->
           <div id="messagesBox" class="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5"></div>
 
@@ -328,9 +337,35 @@
           </div>
         </div>
 
+      </div> <!-- /#instructorGrid -->
+
+      <!-- Tool 3: Gemini AI Brain Configuration (Agent Mode) -->
+      <div class="bg-gradient-to-r from-purple-50 to-indigo-50 p-5 rounded-2xl border border-purple-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xl shadow-md">
+            🧠
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-slate-800 text-sm">การเชื่อมต่อสมอง Gemini AI (Agent Mode)</h3>
+              <span id="geminiActiveBadge" class="bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                กำลังใช้ระบบจำลอง
+              </span>
+            </div>
+            <p class="text-xs text-slate-600 mt-0.5">
+              ใส่ Google Gemini API Key ที่นี่ เพื่ออัปเกรดให้พี่ TA ใช้โมเดลภาษา (LLM) ในการวิเคราะห์และโต้ตอบอย่างอิสระ
+            </p>
+          </div>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+          <input type="password" id="geminiApiKeyField" placeholder="ใส่ Gemini API Key (ถ้ามี)" class="px-3.5 py-2 text-xs rounded-xl border border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full md:w-64 bg-white">
+          <button onclick="saveGeminiApiKey()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl shadow transition whitespace-nowrap">
+            บันทึก Key
+          </button>
+        </div>
       </div>
 
-      <!-- Tool 3: Teaching Notes & Rubrics (คู่มือเฉลยและเกณฑ์ 5 ขั้นตอนสำหรับอาจารย์) -->
+      <!-- Tool 4: Teaching Notes & Rubrics (คู่มือเฉลยและเกณฑ์ 5 ขั้นตอนสำหรับอาจารย์) -->
       <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div class="flex items-center gap-2 mb-3">
           <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
@@ -565,7 +600,31 @@
       }
     }
 
-    function handleSend(e) {
+    const GEMINI_SYSTEM_PROMPT = `
+คุณคือ "พี่ TA ประจำวิชาการจัดการเชิงกลยุทธ์ (Strategic Management)" คณะวิทยาการจัดการ
+บุคลิก: รุ่นพี่ TA ใจดี สุภาพ เป็นกันเอง แต่กระตุ้นทางความคิดจริงจังตามหลักวิชาการ
+เป้าหมายของ Agent: โค้ชนิสิตนักศึกษาให้ผ่านกระบวนการคิดวิเคราะห์ตาม "บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก" ผ่านกรณีศึกษา "BEARHOUSE กับ หมึกกรุบ" ให้ครบ 5 ขั้นตอน
+
+📌 กรอบและเกณฑ์ประเมิน 5 ขั้นตอน:
+- ขั้นที่ 1: มหภาค PESTEL (ต้องระบุปัจจัยภายนอก เช่น S: เทรนด์สุขภาพ/รสชาติหม่าล่า หรือ T: พลังไวรัล TikTok)
+- ขั้นที่ 2: แยก O/T กับ S/W (ช่องยูทูบ Bearhug คือ "จุดแข็งภายใน (Strength)" เท่านั้น ถ้าตอบว่าเป็นโอกาส ให้ปฏิเสธอย่างสุภาพและอธิบายเหตุผลว่าทำไมถึงเป็นจุดแข็ง แล้วถามซ้ำในขั้นเดิม!)
+- ขั้นที่ 3: Five Forces ใน 7-Eleven (ชานมในตู้แช่มีสินค้าทดแทนมหาศาลและแข่งดุ แต่หมึกกรุบเปิด Category ขนมบุกหม่าล่าที่ยังไม่มีเจ้าตลาด)
+- ขั้นที่ 4: ผู้เข้าตลาดรายใหม่และเกราะป้องกัน (ขนมเข้าง่าย ลอกสูตรง่ายมาก ต้องมี Barriers to Entry เช่น Brand Loyalty, สัญญาล็อกวัตถุดิบกับซัพพลายเออร์)
+- ขั้นที่ 5: Scenario Planning (เสนอ No-Regret Move ที่ปฏิบัติได้จริง ไม่ว่าอนาคตกระแสหม่าล่าจะฮิตต่อหรือตกเทรนด์)
+
+⚠️ กฎเหล็กของ Agent:
+1. ห้ามเฉลยคำตอบสำเร็จรูป ให้นักศึกษาพยายามคิดและตอบด้วยตนเอง
+2. หากนักศึกษาตอบปัจจัยภายใน (เงินทุน, บาริสต้า, พนักงาน) ให้เตือนทันทีว่าเป็นจุดแข็ง/จุดอ่อนตามหัวข้อ 3.7
+3. ถ้านักศึกษาพิมพ์กวน หรือตอบไม่ตรง ให้ชี้แนะและถามซ้ำในขั้นเดิม (ห้ามปล่อยผ่าน!)
+4. การควบคุมสถานะระบบ (สำคัญที่สุด):
+   - เมื่อนักศึกษาตอบผ่านขั้น 1 กำลังชวนคิดขั้น 2 ให้ใส่แท็กท้ายข้อความ: [ADVANCE_TO: 2]
+   - เมื่อตอบผ่านขั้น 2 กำลังชวนคิดขั้น 3 ให้ใส่แท็กท้ายข้อความ: [ADVANCE_TO: 3]
+   - เมื่อตอบผ่านขั้น 3 กำลังชวนคิดขั้น 4 ให้ใส่แท็กท้ายข้อความ: [ADVANCE_TO: 4]
+   - เมื่อตอบผ่านขั้น 4 กำลังชวนคิดขั้น 5 ให้ใส่แท็กท้ายข้อความ: [ADVANCE_TO: 5]
+   - เมื่อตอบผ่านขั้น 5 ครบถ้วน ให้สรุปข้อคิดเห็น ชื่นชม และใส่แท็ก: [MISSION_COMPLETED]
+`;
+
+    async function handleSend(e) {
       e.preventDefault();
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -577,12 +636,139 @@
       renderMessages();
       updateUI();
 
-      setTimeout(() => {
-        const reply = evaluateSocraticAnswer(text);
-        chatHistory.push({ role: 'assistant', text: reply });
-        renderMessages();
-        updateUI();
-      }, 400);
+      // Show typing indicator
+      showTypingIndicator();
+
+      // Dispatch to Gemini LLM Agent (or Fallback Engine)
+      const reply = await getAgentResponse(text);
+      removeTypingIndicator();
+
+      chatHistory.push({ role: 'assistant', text: reply });
+      renderMessages();
+      updateUI();
+    }
+
+    async function getAgentResponse(userText) {
+      const apiKey = localStorage.getItem('GEMINI_API_KEY') || '';
+
+      if (apiKey) {
+        try {
+          const contents = chatHistory.map(m => ({
+            role: m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: m.text }]
+          }));
+
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-goog-api-key': apiKey
+            },
+            body: JSON.stringify({
+              contents,
+              systemInstruction: { parts: [{ text: GEMINI_SYSTEM_PROMPT }] },
+              generationConfig: {
+                temperature: 0.5,
+                maxOutputTokens: 800
+              }
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (aiText) {
+              setAiStatus(true);
+              return parseAgentResponse(aiText);
+            }
+          } else {
+            console.warn('Gemini API call failed, using fallback rule engine:', await res.text());
+            setAiStatus(false);
+          }
+        } catch (err) {
+          console.warn('Gemini fetch error, using fallback:', err);
+          setAiStatus(false);
+        }
+      } else {
+        setAiStatus(false);
+      }
+
+      // Fallback: Strict Local Socratic Rule Engine
+      return evaluateSocraticAnswer(userText);
+    }
+
+    function parseAgentResponse(rawText) {
+      if (rawText.includes('[ADVANCE_TO: 2]')) currentStep = 2;
+      else if (rawText.includes('[ADVANCE_TO: 3]')) currentStep = 3;
+      else if (rawText.includes('[ADVANCE_TO: 4]')) currentStep = 4;
+      else if (rawText.includes('[ADVANCE_TO: 5]')) currentStep = 5;
+
+      if (rawText.includes('[MISSION_COMPLETED]')) {
+        isPassed = true;
+        generatedToken = generateSecureToken(student.id);
+        const record = {
+          id: student.id,
+          name: student.name,
+          section: student.section,
+          token: generatedToken,
+          time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('th-TH')
+        };
+        addCompletedStudent(record);
+      }
+
+      return rawText
+        .replace(/\[ADVANCE_TO: \d\]/g, '')
+        .replace(/\[MISSION_COMPLETED\]/g, '')
+        .trim();
+    }
+
+    function showTypingIndicator() {
+      const box = document.getElementById('messagesBox');
+      const div = document.createElement('div');
+      div.id = 'typingBubble';
+      div.className = 'flex gap-2.5 items-center text-xs text-slate-400 p-2 italic';
+      div.innerHTML = `<span class="w-2 h-2 rounded-full bg-indigo-500 animate-ping"></span> พี่ TA กำลังคิดวิเคราะห์คำตอบ...`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+      const div = document.getElementById('typingBubble');
+      if (div) div.remove();
+    }
+
+    function setAiStatus(isActive) {
+      const dot = document.getElementById('aiStatusDot');
+      const text = document.getElementById('aiStatusText');
+      const badge = document.getElementById('geminiActiveBadge');
+
+      if (isActive) {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
+        if (text) text.innerText = 'สมอง AI: Gemini 1.5 Flash (Agent Mode Active)';
+        if (badge) {
+          badge.className = 'bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full';
+          badge.innerText = '✓ Gemini Active';
+        }
+      } else {
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500';
+        if (text) text.innerText = 'สมอง AI: Strict Rule Engine (Offline Simulation)';
+        if (badge) {
+          badge.className = 'bg-slate-100 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full';
+          badge.innerText = 'ระบบจำลองในเครื่อง';
+        }
+      }
+    }
+
+    function saveGeminiApiKey() {
+      const key = document.getElementById('geminiApiKeyField').value.trim();
+      if (!key) {
+        alert('กรุณากรอก API Key ก่อนกดบันทึกครับ');
+        return;
+      }
+      localStorage.setItem('GEMINI_API_KEY', key);
+      alert('บันทึก Gemini API Key เรียบร้อยแล้ว! พี่ TA ได้รับการอัปเกรดเป็น LLM Agent ตัวจริงแล้วครับ');
+      setAiStatus(true);
     }
 
     // Mathematical Token Generator (Authentic signature tied to studentId)
@@ -947,6 +1133,14 @@
 
     window.onload = function() {
       renderCompletedStudents();
+      const savedKey = localStorage.getItem('GEMINI_API_KEY');
+      if (savedKey) {
+        const field = document.getElementById('geminiApiKeyField');
+        if (field) field.placeholder = '•••••••••••••••••••••••••••• (เปิดใช้งาน Agent อยู่)';
+        setAiStatus(true);
+      } else {
+        setAiStatus(false);
+      }
     };
   </script>
 
