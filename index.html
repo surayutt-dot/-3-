@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>พี่ TA กลยุทธ์ - วิชาการจัดการเชิงกลยุทธ์ บทที่ 3</title>
+  <!-- Tailwind CSS & Google Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Prompt', sans-serif; }
+    .chat-bubble-assistant { border-radius: 1.25rem 1.25rem 1.25rem 0.25rem; }
+    .chat-bubble-user { border-radius: 1.25rem 1.25rem 0.25rem 1.25rem; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-indigo-500/30 border border-indigo-400 flex items-center justify-center text-xl font-bold shadow-inner">
+          🎓
+        </div>
+        <div>
+          <h1 class="text-base md:text-lg font-bold leading-tight flex items-center gap-2">
+            พี่ TA กลยุทธ์ <span class="text-[10px] md:text-xs bg-indigo-500/40 text-indigo-200 px-2 py-0.5 rounded-full font-normal">Socratic Method</span>
+          </h1>
+          <p class="text-[11px] md:text-xs text-indigo-200">วิชาการจัดการเชิงกลยุทธ์ บทที่ 3: การวิเคราะห์สภาพแวดล้อมภายนอก</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <button onclick="toggleVerifyModal()" class="text-indigo-200 hover:text-white bg-indigo-950/60 px-3 py-1.5 rounded-lg border border-indigo-700/50 transition">
+          🔍 ตรวจสอบรหัส Token
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col">
+
+    <!-- 1. Student Login Screen -->
+    <div id="loginScreen" class="max-w-lg mx-auto my-auto w-full bg-white rounded-2xl shadow-xl border border-slate-100 p-6 md:p-8">
+      <div class="text-center mb-6">
+        <div class="inline-block p-4 bg-indigo-50 text-indigo-600 rounded-2xl text-3xl mb-3 shadow-inner">
+          💡
+        </div>
+        <h2 class="text-2xl font-bold text-slate-800">เข้าสู่ห้องฝึกคิดวิเคราะห์</h2>
+        <p class="text-xs md:text-sm text-slate-500 mt-1">กรอกข้อมูลเพื่อเริ่มทำกิจกรรมและรับรหัสยืนยันคะแนน</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">รหัสนักศึกษา (Student ID) *</label>
+          <input type="text" id="inputStudentId" placeholder="เช่น 6512345678" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">ชื่อ - นามสกุล *</label>
+          <input type="text" id="inputStudentName" placeholder="เช่น นายวริศ ธรรมศาสตร์" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">หมู่เรียน (Section)</label>
+          <select id="inputSection" class="w-full px-3 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+            <option value="Sec 1">Section 1</option>
+            <option value="Sec 2">Section 2</option>
+            <option value="Sec 3">Section 3</option>
+          </select>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl text-xs text-amber-800 leading-relaxed">
+          <span class="font-bold">📌 กฎของกิจกรรม:</span> พี่ TA จะไม่บอกเฉลยคำตอบตรง ๆ แต่จะชวนคิด 5 ขั้นตอน เมื่อผ่านครบทุกข้อ ระบบจะออก <strong>"บัตรยืนยันผ่านด่านพร้อมรหัส Token"</strong> ให้แคปเจอร์ส่งอาจารย์ครับ
+        </div>
+
+        <button onclick="startActivity()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg hover:shadow-indigo-500/20 transition flex items-center justify-center gap-2">
+          <span>เริ่มคุยกับพี่ TA (ด่านที่ 1)</span>
+          <span>→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. Chat & Activity Screen -->
+    <div id="chatScreen" class="hidden flex-1 flex flex-col md:flex-row gap-4 h-[calc(100vh-130px)]">
+      
+      <!-- Left Sidebar: Student Info & Cheatsheet -->
+      <div class="w-full md:w-72 bg-white rounded-2xl border border-slate-200 p-4 flex flex-col shadow-sm overflow-y-auto">
+        <div class="pb-3 border-b border-slate-100 mb-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full" id="labelSection">Sec 1</span>
+            <button onclick="resetActivity()" class="text-xs text-slate-400 hover:text-rose-500">เริ่มใหม่</button>
+          </div>
+          <h3 class="font-bold text-slate-800 mt-1" id="labelName">นายวริศ</h3>
+          <p class="text-xs text-slate-500 font-mono" id="labelId">รหัส 6512345678</p>
+        </div>
+
+        <!-- Success Certificate Card (Shown when passed) -->
+        <div id="certCard" class="hidden mb-3 bg-gradient-to-br from-emerald-500 to-teal-700 rounded-xl p-4 text-white shadow-md">
+          <div class="text-center">
+            <span class="text-2xl">🏆</span>
+            <h4 class="font-bold text-sm mt-1">ผ่านภารกิจบทที่ 3 แล้ว!</h4>
+            <p class="text-[11px] text-emerald-100 mt-0.5">บันทึกรหัสนี้หรือแคปหน้าจอส่งอาจารย์:</p>
+            <div id="tokenText" class="bg-white/20 border border-white/40 text-white font-mono font-bold text-center py-1.5 px-2 rounded-lg text-sm mt-2 select-all tracking-wider">
+              MGMT3-XXXXXX
+            </div>
+            <button onclick="copyToken()" class="mt-2 text-[10px] bg-white text-emerald-800 font-semibold px-3 py-1 rounded-md shadow hover:bg-emerald-50 transition w-full">
+              📋 คัดลอกรหัส Token
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Cheatsheet -->
+        <h4 class="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">💡 สรุปกรอบคิด บทที่ 3</h4>
+        <div class="space-y-2 text-xs text-slate-600 flex-1">
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <strong class="text-indigo-950 block mb-0.5">1. PESTEL (มหภาค)</strong>
+            P: การเมือง • E: ศก./เงินเฟ้อ • S: สังคม/สุขภาพ • T: TikTok/AI • E: Net Zero • L: กฎหมาย
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <strong class="text-indigo-950 block mb-0.5">2. Five Forces (อุตสาหกรรม)</strong>
+            ผู้เข้าใหม่ • ผู้ซื้อ • ซัพพลายเออร์ • สินค้าทดแทน • การแข่งระหว่างคู่แข่งเดิม
+          </div>
+          <div class="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+            <strong>⚠️ ห้ามสับสน:</strong> "โอกาส/อุปสรรค" ต้องเป็นปัจจัยภายนอกที่ควบคุมไม่ได้ (ห้ามตอบเรื่องเงินทุนหรือพนักงาน)
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Chat Area -->
+      <div class="flex-1 bg-white rounded-2xl border border-slate-200 flex flex-col shadow-sm overflow-hidden">
+        
+        <!-- Stepper Header -->
+        <div class="px-4 py-3 bg-slate-100/70 border-b border-slate-200">
+          <div class="flex justify-between items-center mb-2">
+            <div>
+              <span class="text-[11px] font-semibold text-slate-500 uppercase">กรณีศึกษา:</span>
+              <h3 class="text-xs md:text-sm font-bold text-slate-800">BEARHOUSE กับ หมึกกรุบ (โตคนละจังหวะ)</h3>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-[11px] text-slate-600 font-medium">พี่ TA พร้อมตอบ</span>
+            </div>
+          </div>
+
+          <!-- 5 Steps -->
+          <div class="grid grid-cols-5 gap-1 pt-1 border-t border-slate-200">
+            <div id="step1" class="text-center py-1 px-1 rounded text-[10px] font-bold bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400">1. PESTEL</div>
+            <div id="step2" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">2. แยก O/T</div>
+            <div id="step3" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">3. Five Forces</div>
+            <div id="step4" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">4. ผู้เข้าใหม่</div>
+            <div id="step5" class="text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500">5. ฉากทัศน์</div>
+          </div>
+        </div>
+
+        <!-- Messages Box -->
+        <div id="messagesBox" class="flex-1 p-4 md:p-5 overflow-y-auto space-y-3.5"></div>
+
+        <!-- Input Box -->
+        <div class="p-3 md:p-4 border-t border-slate-200 bg-white">
+          <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2 px-1">
+            <span>💡 คิดวิเคราะห์และตอบตามหลักวิชาการ</span>
+            <span id="quotaPill" class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full font-medium">
+              สิทธิ์การพิมพ์: เหลือ <strong id="quotaCount" class="font-bold text-indigo-900">15</strong>/15
+            </span>
+          </div>
+          <form onsubmit="handleSend(event)" class="flex gap-2">
+            <input type="text" id="chatInput" placeholder="พิมพ์ความคิดเห็น หรือตอบคำถามพี่ TA ที่นี่..." class="flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+            <button type="submit" id="sendBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-3 rounded-xl shadow transition text-sm flex items-center gap-1">
+              <span>ส่ง</span>
+              <span>➤</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal for Professor to Verify Student Tokens -->
+  <div id="verifyModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-base flex items-center gap-2">
+          <span>🔍</span> เครื่องมือตรวจสอบรหัส Token
+        </h3>
+        <button onclick="toggleVerifyModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+      </div>
+      <p class="text-xs text-slate-500 mb-3">
+        อาจารย์สามารถนำรหัสนักศึกษาและรหัส Token ที่เด็กส่งมา วางที่นี่เพื่อตรวจสอบความถูกต้องได้ทันทีครับ
+      </p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสนักศึกษา</label>
+          <input type="text" id="verifyIdInput" placeholder="เช่น 6512345678" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">รหัส Token ที่เด็กส่งมา</label>
+          <input type="text" id="verifyTokenInput" placeholder="เช่น MGMT3-XXXXXX" class="w-full px-3 py-2 text-xs font-mono font-bold rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <button onclick="checkStudentToken()" class="w-full bg-indigo-900 hover:bg-indigo-950 text-white text-xs font-bold py-2.5 rounded-xl shadow transition">
+          ตรวจสอบทันที
+        </button>
+        <div id="verifyResult" class="hidden text-xs p-3 rounded-xl"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socratic Engine Script (100% Client-Side for GitHub Pages) -->
+  <script>
+    let student = { id: '', name: '', section: '' };
+    let currentStep = 1;
+    let messageCount = 0;
+    const MAX_MESSAGES = 15;
+    let isPassed = false;
+    let generatedToken = '';
+    let chatHistory = [];
+
+    const starterPrompt = `สวัสดีครับน้อง! ยินดีต้อนรับสู่การฝึกคิดวิเคราะห์เชิงกลยุทธ์ บทที่ 3 ครับ 🎓
+
+โจทย์ของเราในวันนี้คือกรณีศึกษา **"BEARHOUSE กับ หมึกกรุบ"** เราจะค่อย ๆ ไล่ระดับการคิดไปด้วยกัน 5 ขั้นตอนครับ
+
+📌 **ขั้นที่ 1: การวิเคราะห์ระดับมหภาค (PESTEL)**
+จากเนื้อหา หมึกกรุบทำรายได้โตถึง 471% (เกือบ 2,000 ล้านบาท) ในปี 2568 น้องคิดว่า **ปัจจัยภายนอกด้านใดใน PESTEL (P, E, S, T, E, L)** ที่เป็นลมใต้ปีกสำคัญที่สุดที่ทำให้หมึกกรุบแจ้งเกิดได้เร็วขนาดนี้? ลองเลือกมา 1-2 ด้านพร้อมอธิบายเหตุผลให้พี่ฟังสักนิดครับ!`;
+
+    function startActivity() {
+      const id = document.getElementById('inputStudentId').value.trim();
+      const name = document.getElementById('inputStudentName').value.trim();
+      const sec = document.getElementById('inputSection').value;
+
+      if (!id || !name) {
+        alert('กรุณากรอกรหัสนักศึกษาและชื่อ-นามสกุลก่อนเข้าใช้งานครับ');
+        return;
+      }
+
+      student = { id, name, section: sec };
+      document.getElementById('labelName').innerText = name;
+      document.getElementById('labelId').innerText = 'รหัส ' + id;
+      document.getElementById('labelSection').innerText = sec;
+
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('chatScreen').classList.remove('hidden');
+
+      chatHistory = [{ role: 'assistant', text: starterPrompt }];
+      renderMessages();
+      updateUI();
+    }
+
+    function renderMessages() {
+      const box = document.getElementById('messagesBox');
+      box.innerHTML = '';
+
+      chatHistory.forEach(m => {
+        const isUser = m.role === 'user';
+        const wrap = document.createElement('div');
+        wrap.className = `flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = `w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs shadow ${isUser ? 'bg-indigo-600 text-white order-2' : 'bg-amber-100 text-amber-800'}`;
+        avatar.innerText = isUser ? '👤' : '💡';
+
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[85%] p-3 text-xs md:text-sm leading-relaxed ${isUser ? 'bg-indigo-600 text-white chat-bubble-user' : 'bg-slate-100 text-slate-800 chat-bubble-assistant border border-slate-200'}`;
+        
+        let formatted = m.text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/`(.*?)`/g, '<code class="bg-indigo-950/20 px-1 py-0.5 rounded font-mono text-[11px] font-bold">$1</code>')
+          .replace(/\n/g, '<br>');
+
+        bubble.innerHTML = formatted;
+        wrap.appendChild(avatar);
+        wrap.appendChild(bubble);
+        box.appendChild(wrap);
+      });
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function updateUI() {
+      // Update Stepper Badges
+      const names = ['1. PESTEL', '2. แยก O/T', '3. Five Forces', '4. ผู้เข้าใหม่', '5. ฉากทัศน์'];
+      for (let i = 1; i <= 5; i++) {
+        const badge = document.getElementById(`step${i}`);
+        if (!badge) continue;
+        const label = names[i-1];
+        if (isPassed || currentStep > i) {
+          badge.className = "text-center py-1 px-1 rounded text-[10px] font-semibold bg-emerald-600 text-white shadow-sm transition";
+          badge.innerHTML = `✓ ${label}`;
+        } else if (currentStep === i) {
+          badge.className = "text-center py-1 px-1 rounded text-[10px] font-bold bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400";
+          badge.innerHTML = label;
+        } else {
+          badge.className = "text-center py-1 px-1 rounded text-[10px] font-medium bg-slate-200 text-slate-500 transition";
+          badge.innerHTML = label;
+        }
+      }
+
+      // Quota & Lock
+      const remain = Math.max(0, MAX_MESSAGES - messageCount);
+      document.getElementById('quotaCount').innerText = remain;
+
+      const input = document.getElementById('chatInput');
+      const sendBtn = document.getElementById('sendBtn');
+
+      if (isPassed) {
+        input.disabled = true;
+        sendBtn.disabled = true;
+        input.placeholder = "🎉 ผ่านการฝึกคิดครบ 5 ขั้นตอนแล้ว บันทึก Token ด้านซ้ายไปส่งงานได้เลยครับ";
+        input.className = "flex-1 px-4 py-3 rounded-xl border border-emerald-300 bg-emerald-50/70 text-emerald-800 text-xs font-semibold cursor-not-allowed";
+        document.getElementById('certCard').classList.remove('hidden');
+        document.getElementById('tokenText').innerText = generatedToken;
+      } else if (remain <= 0) {
+        input.disabled = true;
+        sendBtn.disabled = true;
+        input.placeholder = "⚠️ ใช้สิทธิ์พิมพ์ครบ 15 ข้อความแล้ว กรุณากด 'เริ่มใหม่' ด้านซ้าย";
+        input.className = "flex-1 px-4 py-3 rounded-xl border border-amber-300 bg-amber-50/70 text-amber-800 text-xs font-semibold cursor-not-allowed";
+      } else {
+        input.disabled = false;
+        sendBtn.disabled = false;
+        input.placeholder = "พิมพ์ความคิดเห็น หรือตอบคำถามพี่ TA ที่นี่...";
+        input.className = "flex-1 px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm bg-white";
+      }
+    }
+
+    function handleSend(e) {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || isPassed || messageCount >= MAX_MESSAGES) return;
+
+      input.value = '';
+      messageCount++;
+      chatHistory.push({ role: 'user', text });
+      renderMessages();
+      updateUI();
+
+      // Socratic Response Evaluation
+      setTimeout(() => {
+        const reply = evaluateSocraticAnswer(text);
+        chatHistory.push({ role: 'assistant', text: reply });
+        renderMessages();
+        updateUI();
+      }, 400);
+    }
+
+    // Mathematical Token Generator (Authentic signature tied to studentId)
+    function generateSecureToken(id) {
+      let hash = 0;
+      const str = 'MGMT3_SALT_2026_' + id;
+      for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const code = Math.abs(hash).toString(36).toUpperCase().padStart(6, '0').slice(-6);
+      return 'MGMT3-' + code;
+    }
+
+    function evaluateSocraticAnswer(userText) {
+      const lower = userText.toLowerCase();
+
+      // Check evasion or meaningless answers
+      if (userText.length < 5 || lower.includes('ไม่รู้') || lower.includes('ไม่ทราบ') || lower.includes('งง') || lower.includes('555') || lower.includes('เดา')) {
+        return `พี่เข้าใจครับว่าบางคำถามอาจต้องใช้เวลาคิดสักนิด! 😊 
+แต่พี่อยากให้น้องลองพยายามวิเคราะห์ดูด้วยตัวเองก่อนครับ ไม่มีผิดถูกแบบตายตัว 
+
+คำแนะนำสำหรับ **ขั้นที่ ${currentStep}**: ลองทบทวนจากสรุปเนื้อหาบทที่ 3 ที่อยู่แถบซ้ายมือ แล้วลองพิมพ์ความคิดเห็นมาใหม่อีกรอบนะครับ พี่รออ่านอยู่ครับ!`;
+      }
+
+      // Check Internal Factors Misconception (Section 3.7)
+      if (lower.includes('ทุนน้อย') || lower.includes('พนักงาน') || lower.includes('บาริสต้า') || lower.includes('เงินทุน') || lower.includes('ฝีมือ')) {
+        return `⚠️ **จุดนี้ยังไม่ถูกต้องตามหลักการครับน้อง!**
+น้องกำลังเอาเรื่องภายในองค์กร (เช่น ทุน, พนักงาน, ฝีมือ) มาตอบ 
+แต่อาจารย์ได้เน้นย้ำในหัวข้อ 3.7 ว่า: **ปัจจัยภายนอก (O & T) ต้องเป็นสิ่งแวดล้อมที่อยู่นอกองค์กรและธุรกิจควบคุมไม่ได้**
+
+คำถามทดสอบ: *"ถ้ายี่ห้อหมึกกรุบไม่เคยเปิดกิจการขึ้นมา เรื่องนี้ยังคงเกิดขึ้นในสังคมไทยไหม?"*
+ลองคิดถึงปัจจัยภายนอกจริง ๆ แล้วลองตอบในขั้นที่ ${currentStep} ใหม่อีกครั้งครับ!`;
+      }
+
+      // STEP 1: PESTEL
+      if (currentStep === 1) {
+        const hasPestel = lower.includes('s') || lower.includes('t') || lower.includes('p') || lower.includes('e') || lower.includes('l') ||
+                          lower.includes('สังคม') || lower.includes('สุขภาพ') || lower.includes('หม่าล่า') || lower.includes('แคล') ||
+                          lower.includes('เทคโนโลยี') || lower.includes('tiktok') || lower.includes('ติ๊กต๊อก') || lower.includes('ไวรัล') ||
+                          lower.includes('โซเชียล') || lower.includes('กฎหมาย') || lower.includes('เศรษฐกิจ');
+
+        if (!hasPestel) {
+          return `คำตอบของน้องยังไม่ตรงกับกรอบ **PESTEL** ครับ 🤔
+ในบทที่ 3 PESTEL ประกอบด้วย 6 ด้าน (การเมือง P, เศรษฐกิจ E, สังคม/เทรนด์ S, เทคโนโลยี T, สิ่งแวดล้อม E, กฎหมาย L)
+
+สำหรับขนม 'หมึกกรุบ' ที่เป็นของกินเล่นแคลอรีต่ำรสหม่าล่า และดังในหมู่วัยรุ่น น้องคิดว่าตรงกับด้าน **S (สังคม/ค่านิยมสุขภาพ)** หรือ **T (เทคโนโลยี/แพลตฟอร์ม)** อย่างไรครับ? 
+👉 *ลองตอบโดยระบุชื่อปัจจัยใน PESTEL ให้ชัดเจนอีกครั้งครับ!*`;
+        }
+
+        currentStep = 2;
+        return `ยอดเยี่ยมมากครับ! 👏 ตอบได้ตรงกรอบ **PESTEL** อย่างชัดเจน 
+เรื่องเทรนด์รักสุขภาพ (S) และพลังของ TikTok/โซเชียลมีเดีย (T) ถือเป็นแรงส่งสำคัญจริง ๆ
+
+คราวนี้มาลุยต่อที่ **📌 ขั้นที่ 2: การแยกปัจจัยภายนอก (Opportunities & Threats) ให้ขาด**
+ในบทความเล่าว่า *'เจ้าของแบรนด์มีช่องยูทูบ Bearhug ที่มีฐานผู้ติดตามและแฟนคลับจำนวนมาก'*
+พี่อยากทดสอบความเข้าใจของน้องว่า: 
+การมีช่องยูทูบและฐานแฟนคลับนี้ ตามหัวข้อ 3.7 จัดเป็น **"โอกาสภายนอก (Opportunity)"** หรือเป็น **"จุดแข็งภายใน (Strength)"** ของบริษัทครับ? และเพราะอะไร?`;
+      }
+
+      // STEP 2: O/T vs S/W Trap
+      if (currentStep === 2) {
+        const saidOpp = lower.includes('โอกาส') || lower.includes('opp');
+        const saidStr = lower.includes('จุดแข็ง') || lower.includes('strength') || lower.includes('ภายใน');
+
+        if (saidOpp && !saidStr) {
+          return `❌ **ยังไม่ถูกต้องครับน้อง! นี่คือหลุมพรางยอดฮิตที่อาจารย์พูดถึงเลยครับ**
+
+หลายคนคิดว่ามีช่องยูทูบคือโอกาสในการขายของ แต่ความจริงคือ:
+ช่องยูทูบ Bearhug เป็นสิ่งที่บริษัทสร้างขึ้นเอง ลงทุนเอง และผู้บริหารควบคุมได้ทั้งหมด 
+ดังนั้นจึงเป็น **"จุดแข็งภายในองค์กร (Strength)"** ไม่ใช่โอกาสภายนอกครับ!
+
+ลองทบทวนคำถามในข้อ 3.7: *"ถ้ายี่ห้อหมึกกรุบไม่มีอยู่จริง ช่องยูทูบ Bearhug จะยังคงเป็นของเขาไหม?"*
+👉 *ลองตอบยืนยันใหม่อีกครั้งครับว่าสรุปแล้วช่องยูทูบเป็น "จุดแข็ง" หรือ "โอกาส" เพราะเหตุใด?*`;
+        }
+
+        if (!saidStr) {
+          return `พี่ยังไม่เห็นคำตอบที่ฟันธงชัดเจนเลยครับว่าช่องยูทูบเป็น **"จุดแข็ง (Strength)"** หรือ **"โอกาส (Opportunity)"**?
+ลองเลือกมา 1 อย่างพร้อมบอกเหตุผลสั้น ๆ อีกทีครับ!`;
+        }
+
+        currentStep = 3;
+        return `ถูกต้องแม่นยำมากครับ! 💯 
+ช่องยูทูบและแฟนคลับเป็นสิ่งที่แบรนด์สร้างและควบคุมได้ จึงเป็น **"จุดแข็งภายใน (Strength)"** เก่งมากที่ไม่ตกหลุมพรางครับ!
+
+ขยับมาต่อที่ **📌 ขั้นที่ 3: ระดับอุตสาหกรรมด้วย Five Forces และช่องทางจัดจำหน่าย**
+ในปี 2564 คุณซารต์และคุณกานต์เคยเอา 'ชานมกระป๋อง' ไปวางขายใน 7-Eleven แล้วขาดทุนถึง 17 ล้านบาท แต่พอเป็น 'หมึกกรุบ' ในช่องทาง 7-Eleven เหมือนกัน กลับทำยอดขายทะลุพันล้าน
+ตามทฤษฎี **Five Forces (เช่น สินค้าทดแทน หรือ การแข่งขันในอุตสาหกรรม)** น้องคิดว่าทำไมชานมกระป๋องถึงเจ็บหนัก แต่หมึกกรุบถึงรอดและเติบโตได้ครับ?`;
+      }
+
+      // STEP 3: Five Forces & Channel
+      if (currentStep === 3) {
+        const hasForces = lower.includes('ทดแทน') || lower.includes('คู่แข่ง') || lower.includes('ชานม') || lower.includes('เครื่องดื่ม') ||
+                          lower.includes('ตู้แช่') || lower.includes('แปลกใหม่') || lower.includes('category') || lower.includes('ตัวเลือก') ||
+                          lower.includes('เยอะ') || lower.includes('ซ้ำ');
+
+        if (!hasForces) {
+          return `คำตอบยังกว้างไปนิดนึงครับน้อง! 🤔 
+ลองนึกภาพเปรียบเทียบในร้าน 7-Eleven ดูครับ:
+- ตอนเดินไปที่ **ตู้แช่เครื่องดื่ม** มีสินค้าอะไรที่แย่งเงินเราแทนชานมได้บ้าง? (ภัยจากสินค้าทดแทน)
+- แล้วตรง **เชลฟ์ขนม** หมึกกรุบมีคู่แข่งรสหม่าล่าประเภทเดียวกันเยอะไหมตอนเปิดตัว?
+👉 *ลองเชื่อมโยงกับเรื่องแรงกดดัน Five Forces แล้วตอบพี่ใหม่อีกทีครับ!*`;
+        }
+
+        currentStep = 4;
+        return `วิเคราะห์โครงสร้างตลาดได้เฉียบคมมากครับ! 💡 
+ในตู้แช่มีสินค้าทดแทนมหาศาล ทั้งกาแฟ ชาเขียว น้ำอัดลม แถมของเน่าเสียง่าย ขณะที่หมึกกรุบเปิด Category ขนมบุกหม่าล่าที่ยังไม่มีเจ้าตลาด
+
+ไปต่อที่ **📌 ขั้นที่ 4: ภัยจากผู้เข้าตลาดรายใหม่ (Threat of New Entrants) และการสร้างเกราะป้องกัน**
+เมื่อหมึกกรุบขายดีขนาดนี้ ย่อมมีโรงงานอื่นหรือแบรนด์ใหญ่สนใจทำขนมบุกหม่าล่าเลียนแบบออกมาวางขายตัดราคาแน่นอน
+ในมุมมองของน้อง:
+1. ภัยจากผู้เข้าตลาดรายใหม่ในตลาดขนมนี้ **เข้ามาง่าย หรือ เข้ามายาก** เพราะอะไร?
+2. ผู้ก่อตั้งควรสร้าง **เกราะป้องกัน (Barrier to Entry)** อย่างไรเพื่อไม่ให้คู่แข่งหน้าใหม่มาแย่งเค้กชิ้นนี้ไปครับ?`;
+      }
+
+      // STEP 4: Threat of New Entrants & Barrier
+      if (currentStep === 4) {
+        const saidHard = lower.includes('เข้ายาก') || (lower.includes('ยาก') && !lower.includes('ไม่อยาก') && !lower.includes('ไม่ยาก'));
+        if (saidHard) {
+          return `❌ **เอ๊ะ ทำไมถึงคิดว่าเข้ายากครับน้อง? ลองทบทวนดูอีกทีนะ!** 🤔
+ตลาดขนมขบเคี้ยวแบบนี้ ไม่ได้มีสิทธิบัตรยา ไม่ได้ใช้เตาปฏิกรณ์นิวเคลียร์ และไม่ต้องขอสัมปทานผูกขาดใด ๆ เลยครับ โรงงานอาหารในไทยหรือจีนพร้อมแกะสูตรเลียนแบบได้ในเวลาไม่กี่สัปดาห์
+
+ดังนั้นตามทฤษฎี Five Forces ภัยจากผู้เข้าตลาดรายใหม่จึง **"เข้ามาได้ง่ายมาก (High Threat)"** ครับ!
+
+คำถามที่แท้จริงคือ: ในเมื่อคู่แข่งก๊อปปี้สูตรและกระโดดเข้ามาแย่งเค้กได้ง่ายขนาดนี้ ผู้ก่อตั้งหมึกกรุบควรสร้าง **เกราะป้องกัน (Barrier to Entry)** เช่น ความภักดีต่อแบรนด์ (Brand Loyalty) หรือการล็อกสัญญากับซัพพลายเออร์อย่างไรครับ?
+👉 *ลองแก้ตัวอีกรอบนะครับ: สรุปแล้วเข้าง่ายหรือยาก และจะสร้างเกราะป้องกันอย่างไร?*`;
+        }
+
+        const hasBarrier = lower.includes('แบรนด์') || lower.includes('brand') || lower.includes('loyalty') || lower.includes('สัญญา') || 
+                           lower.includes('วัตถุดิบ') || lower.includes('เชลฟ์') || lower.includes('ช่องทาง') || lower.includes('พัฒนา') || 
+                           lower.includes('นวัตกรรม') || lower.includes('ลูกค้า') || lower.includes('ป้องกัน') || lower.includes('โฆษณา') ||
+                           lower.includes('การตลาด') || lower.includes('รสชาติ') || lower.includes('เอกลักษณ์') || lower.includes('โปรโม');
+
+        if (!hasBarrier) {
+          return `ถูกต้องครับที่มองว่า **"คู่แข่งหน้าใหม่เข้ามาได้ง่ายมาก"** เพราะขนมไม่มีสิทธิบัตร เลียนแบบสูตรได้เร็ว! 👍
+
+แต่พี่ยังไม่เห็นคำตอบในส่วนที่ 2 เลยครับ:
+👉 *ในเมื่อคู่แข่งเข้าง่าย หมึกกรุบควรสร้าง **เกราะป้องกัน (Barrier to Entry)** อย่างไร เพื่อป้องกันไม่ให้คู่แข่งรายใหญ่มาแย่งส่วนแบ่งตลาดไปครับ?* (เช่น เรื่องแบรนด์ หรือสัญญาวัตถุดิบ)`;
+        }
+
+        currentStep = 5;
+        return `มองเกมขาดมากครับ! 💡 ขนมเป็นตลาดที่เข้าง่าย การสร้าง Brand Loyalty และการล็อกวัตถุดิบจึงเป็นหัวใจสำคัญในการสกัดคู่แข่ง
+
+มาถึง **📌 ขั้นที่ 5 (ด่านสุดท้าย): การวางแผนฉากทัศน์อนาคต (Scenario Planning) และการตัดสินใจ**
+สมมติว่าในอีก 2 ปีข้างหน้า มี 2 ปัจจัยที่ไม่แน่นอนสูง:
+- แกนที่ 1: **กระแสความนิยมหม่าล่า** (ยังฮิตต่อเนื่อง vs คนเริ่มเบื่อตกเทรนด์)
+- แกนที่ 2: **ภาวะเศรษฐกิจและเงินในกระเป๋าผู้บริโภค** (กำลังซื้อดี vs ข้าวของแพงคนลดค่าขนม)
+
+ในฐานะที่ปรึกษากลยุทธ์ อะไรคือ **"กลยุทธ์ที่หมึกกรุบควรทำอย่างยิ่ง (No-Regret Move)"** ที่ทำแล้วมีประโยชน์แน่นอน ไม่ว่าอนาคตจะตกอยู่ในฉากทัศน์ใดก็ตาม? ขอ 1 แผนกลยุทธ์ชัด ๆ ครับ!`;
+      }
+
+      // STEP 5: Scenario Planning & Completion
+      if (currentStep === 5) {
+        const hasStrategy = lower.includes('ขยาย') || lower.includes('รส') || lower.includes('ต้นทุน') || lower.includes('วิจัย') ||
+                            lower.includes('ส่งออก') || lower.includes('สินค้าใหม่') || lower.includes('กระจาย') || lower.includes('ราคา') ||
+                            lower.includes('ลูกค้า') || lower.includes('ประหยัด') || lower.includes('ต่างประเทศ') || lower.includes('ออนไลน์') ||
+                            lower.includes('พัฒนา') || lower.includes('สมาชิก') || lower.includes('ตลาด');
+
+        if (!hasStrategy) {
+          return `กลยุทธ์ของน้องยังไม่ค่อยชัดเจนเป็นรูปธรรมครับ! 
+ลองเสนอแผนที่ทำได้จริง เช่น: การวิจัยรสชาติอื่นที่ไม่ใช่หม่าล่าเพื่อกระจายความเสี่ยง, การคุมต้นทุนการผลิต, หรือการหาตลาดส่งออกใหม่ ๆ
+👉 *ช่วยระบุกลยุทธ์ที่เป็นรูปธรรมให้พี่ฟังอีกครั้งครับ!*`;
+        }
+
+        // Passed!
+        isPassed = true;
+        generatedToken = generateSecureToken(student.id);
+
+        return `🎉 **ยินดีด้วยครับน้อง! น้องผ่านการประเมินการคิดเชิงกลยุทธ์ครบทั้ง 5 ขั้นตอนแล้วจริง ๆ ครับ!** 🏆
+
+สรุปผลการประเมินกระบวนการคิดของน้อง:
+1. **วิเคราะห์มหภาค (PESTEL):** ระบุปัจจัย S & T ได้ตรงประเด็น
+2. **แม่นยำเรื่อง O/T vs S/W:** ไม่สับสนระหว่างจุดแข็งภายในกับโอกาสภายนอก
+3. **เข้าใจโครงสร้างอุตสาหกรรม (Five Forces):** วิเคราะห์สินค้าทดแทนในช่องทางโมเดิร์นเทรดได้ขาด
+4. **สร้างเกราะป้องกัน (Barriers to Entry):** เสนอการป้องกันคู่แข่งเลียนแบบได้อย่างมีชั้นเชิง
+5. **Scenario Planning:** เสนอกลยุทธ์ No-Regret Move ที่ตอบโจทย์ความไม่แน่นอนในอนาคตได้จริง
+
+🎖️ **รหัสยืนยันผ่านด่านของน้องคือ:**
+👉 \`${generatedToken}\` 👈
+
+น้องสามารถคัดลอกรหัสนี้ หรือแคปเจอร์หน้าจอบัตรยืนยันด้านซ้ายมือ นำไปส่งอาจารย์เพื่อรับคะแนนเต็มประจำบทที่ 3 ได้เลยครับ เก่งมากครับ! 👏`;
+      }
+
+      return `พี่ได้รับคำตอบแล้วครับ ลองเชื่อมโยงกับบทที่ 3 อีกนิดนะครับ!`;
+    }
+
+    function copyToken() {
+      navigator.clipboard.writeText(generatedToken).then(() => {
+        alert('คัดลอกรหัส Token: ' + generatedToken + ' เรียบร้อยแล้ว!');
+      });
+    }
+
+    function resetActivity() {
+      if (confirm('ต้องการเริ่มทำกิจกรรมใหม่หรือไม่?')) {
+        currentStep = 1;
+        messageCount = 0;
+        isPassed = false;
+        generatedToken = '';
+        chatHistory = [];
+        document.getElementById('chatScreen').classList.add('hidden');
+        document.getElementById('loginScreen').classList.remove('hidden');
+      }
+    }
+
+    // Professor Verification Tool
+    function toggleVerifyModal() {
+      document.getElementById('verifyModal').classList.toggle('hidden');
+      document.getElementById('verifyResult').classList.add('hidden');
+    }
+
+    function checkStudentToken() {
+      const id = document.getElementById('verifyIdInput').value.trim();
+      const token = document.getElementById('verifyTokenInput').value.trim().toUpperCase();
+      const resDiv = document.getElementById('verifyResult');
+
+      if (!id || !token) {
+        alert('กรุณากรอกทั้งรหัสนักศึกษาและรหัส Token');
+        return;
+      }
+
+      const expectedToken = generateSecureToken(id);
+      resDiv.classList.remove('hidden');
+
+      if (token === expectedToken) {
+        resDiv.className = 'text-xs p-3 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-medium';
+        resDiv.innerHTML = `✅ <strong>รหัสถูกต้อง 100%!</strong><br>รหัส Token <code>${token}</code> นี้ถูกสร้างขึ้นจริงจากการตอบผ่านครบ 5 ด่านของรหัสนักศึกษา <strong>${id}</strong>`;
+      } else {
+        resDiv.className = 'text-xs p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 font-medium';
+        resDiv.innerHTML = `❌ <strong>รหัสไม่ถูกต้อง!</strong><br>รหัส Token <code>${token}</code> ไม่ตรงกับรหัสนักศึกษา ${id} (อาจพิมพ์ผิด หรือไม่ใช่รหัสจริง)`;
+      }
+    }
+  </script>
+</body>
+</html>
