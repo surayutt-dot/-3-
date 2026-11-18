@@ -244,29 +244,59 @@
           </div>
         </div>
 
-        <!-- Tool 2: Google Gemini AI Settings -->
+        <!-- Tool 2: Completed Students List & Sync -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
-            <div class="flex items-center gap-2 mb-2">
-              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
-                ⚙️
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                  📋
+                </div>
+                <div>
+                  <h3 class="font-bold text-slate-800 text-sm">รายชื่อนักศึกษาที่ทำผ่านแล้ว</h3>
+                  <p class="text-[11px] text-slate-500">บันทึกอัตโนมัติเมื่อทำผ่านครบ 5 ขั้นตอน</p>
+                </div>
               </div>
-              <h3 class="font-bold text-slate-800 text-sm">การตั้งค่า Google Gemini API (ไม่บังคับ)</h3>
+              <span id="completedBadgeCount" class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                ผ่านแล้ว 0 คน
+              </span>
             </div>
-            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-              ปัจจุบันระบบใช้ <strong>Strict Socratic Engine (ระบบประเมิน 5 ขั้นตอนในเบราว์เซอร์)</strong> ซึ่งทำงานได้สมบูรณ์แบบโดยไม่ต้องต่ออินเทอร์เน็ต แต่หากต้องการเปิดพลัง LLM เต็มรูปแบบ สามารถบันทึก API Key ไว้ในเครื่องนี้ได้ครับ
-            </p>
 
-            <div class="space-y-3">
-              <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1">Google Gemini API Key</label>
-                <input type="password" id="instructorApiKeyInput" placeholder="ใส่รหัส API Key จาก Google AI Studio" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+            <!-- Table of Completed Students -->
+            <div class="border border-slate-200 rounded-xl overflow-hidden mt-3 max-h-56 overflow-y-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 font-semibold uppercase sticky top-0 border-b border-slate-200">
+                  <tr>
+                    <th class="py-2 px-3">รหัส นศ.</th>
+                    <th class="py-2 px-3">ชื่อ - นามสกุล</th>
+                    <th class="py-2 px-3">Sec</th>
+                    <th class="py-2 px-3 text-center">Token</th>
+                    <th class="py-2 px-3 text-right">เวลา</th>
+                  </tr>
+                </thead>
+                <tbody id="completedTableBody" class="divide-y divide-slate-100 font-normal text-slate-700">
+                  <tr>
+                    <td colspan="5" class="text-center py-6 text-slate-400">
+                      ยังไม่มีข้อมูลนักศึกษาที่ผ่านในระบบ<br>
+                      <span class="text-[10px] text-slate-400">(เมื่อนักศึกษาทำผ่าน หรืออาจารย์บันทึกผล จะปรากฏที่นี่ทันที)</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Action Buttons & Google Sheet Webhook Sync -->
+            <div class="mt-4 pt-3 border-t border-slate-100 flex flex-col gap-2">
+              <div class="flex gap-2">
+                <button onclick="exportCompletedCSV()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-xs py-2 rounded-xl transition flex items-center justify-center gap-1.5">
+                  <span>📥</span> ดาวน์โหลด Excel (CSV)
+                </button>
+                <button onclick="toggleSheetSyncModal()" class="px-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs py-2 rounded-xl border border-indigo-200 transition flex items-center gap-1">
+                  <span>🔗</span> เชื่อม Google Sheets
+                </button>
               </div>
-              <button onclick="saveClientApiKey()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 rounded-xl shadow transition">
-                บันทึกการตั้งค่า Key
-              </button>
-              <p class="text-[11px] text-slate-400 text-center">
-                คีย์จะถูกบันทึกอย่างปลอดภัยในเบราว์เซอร์นี้ (Local Storage)
+              <p class="text-[10px] text-slate-400 text-center">
+                *หากให้เด็กทำจากคนละเครื่อง สามารถเชื่อมกับ Google Sheets เพื่อดึงรายชื่อมารวมกันได้อัตโนมัติ
               </p>
             </div>
           </div>
@@ -655,6 +685,17 @@
         isPassed = true;
         generatedToken = generateSecureToken(student.id);
 
+        // Record completed student in list & sync
+        const record = {
+          id: student.id,
+          name: student.name,
+          section: student.section,
+          token: generatedToken,
+          time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+          date: new Date().toLocaleDateString('th-TH')
+        };
+        addCompletedStudent(record);
+
         return `🎉 **ยินดีด้วยครับน้อง! น้องผ่านการประเมินการคิดเชิงกลยุทธ์ครบทั้ง 5 ขั้นตอนแล้วจริง ๆ ครับ!** 🏆
 
 สรุปผลการประเมินกระบวนการคิดของน้อง:
@@ -707,30 +748,179 @@
 
       if (token === expectedToken) {
         resDiv.className = 'text-xs p-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 font-medium leading-relaxed';
-        resDiv.innerHTML = `✅ <strong>รหัสถูกต้อง 100%!</strong><br>รหัส Token <code>${token}</code> นี้ตรงกับรหัสนักศึกษา <strong>${id}</strong> จริง และผ่านการคิดครบ 5 ขั้นตอนเรียบร้อยครับ`;
+        resDiv.innerHTML = `✅ <strong>รหัสถูกต้อง 100%!</strong><br>รหัส Token <code>${token}</code> นี้ตรงกับรหัสนักศึกษา <strong>${id}</strong> จริง และผ่านครบ 5 ด่านเรียบร้อย<br>
+        <button onclick="addVerifiedStudent('${id}', '${token}')" class="mt-2 bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1 rounded-md text-[11px] font-semibold">
+          ➕ บันทึกชื่อเข้าตารางด้านขวา
+        </button>`;
       } else {
         resDiv.className = 'text-xs p-3.5 rounded-xl bg-rose-50 border border-rose-300 text-rose-800 font-medium leading-relaxed';
         resDiv.innerHTML = `❌ <strong>รหัสไม่ถูกต้อง!</strong><br>รหัส Token <code>${token}</code> ไม่ตรงกับรหัสนักศึกษา ${id} (อาจพิมพ์ผิด หรือไม่ใช่รหัสจริง)`;
       }
     }
 
-    // Save Client-Side API Key in LocalStorage
-    function saveClientApiKey() {
-      const key = document.getElementById('instructorApiKeyInput').value.trim();
-      if (!key) {
-        alert('กรุณาใส่ API Key ก่อนกดบันทึกครับ');
+    function addVerifiedStudent(id, token) {
+      const record = {
+        id: id,
+        name: 'นศ. ' + id,
+        section: 'Sec 1',
+        token: token,
+        time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }),
+        date: new Date().toLocaleDateString('th-TH')
+      };
+      addCompletedStudent(record);
+      alert('บันทึกรหัส ' + id + ' เข้าสู่ตารางเรียบร้อยแล้วครับ!');
+      document.getElementById('verifyResult').classList.add('hidden');
+    }
+
+    // Storage & Sync Functions
+    function getCompletedStudents() {
+      try {
+        return JSON.parse(localStorage.getItem('COMPLETED_STUDENTS') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function addCompletedStudent(record) {
+      const list = getCompletedStudents();
+      // Avoid duplicate by student id
+      const existingIdx = list.findIndex(s => s.id === record.id);
+      if (existingIdx >= 0) {
+        list[existingIdx] = record;
+      } else {
+        list.unshift(record);
+      }
+      localStorage.setItem('COMPLETED_STUDENTS', JSON.stringify(list));
+      renderCompletedStudents();
+
+      // If Google Sheet Webhook is configured, send in background
+      const sheetUrl = localStorage.getItem('GOOGLE_SHEET_WEBHOOK');
+      if (sheetUrl) {
+        try {
+          fetch(sheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(record)
+          });
+        } catch (err) {
+          console.warn('Google Sheet Sync error:', err);
+        }
+      }
+    }
+
+    function renderCompletedStudents() {
+      const list = getCompletedStudents();
+      const tbody = document.getElementById('completedTableBody');
+      const badge = document.getElementById('completedBadgeCount');
+
+      if (!tbody) return;
+
+      if (badge) badge.innerText = `ผ่านแล้ว ${list.length} คน`;
+
+      if (list.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center py-6 text-slate-400">
+              ยังไม่มีข้อมูลนักศึกษาที่ผ่านในระบบ<br>
+              <span class="text-[10px] text-slate-400">(เมื่อนักศึกษาทำผ่าน หรืออาจารย์บันทึกผล จะปรากฏที่นี่ทันที)</span>
+            </td>
+          </tr>
+        `;
         return;
       }
-      localStorage.setItem('GEMINI_API_KEY', key);
-      alert('บันทึก API Key ในเบราว์เซอร์นี้เรียบร้อยแล้ว!');
+
+      tbody.innerHTML = '';
+      list.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-mono font-medium">${s.id}</td>
+          <td class="py-2.5 px-3 font-semibold text-slate-800">${s.name}</td>
+          <td class="py-2.5 px-3 text-slate-500">${s.section || 'Sec 1'}</td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-700 bg-emerald-50/50 rounded">${s.token}</td>
+          <td class="py-2.5 px-3 text-right text-slate-400 font-mono text-[11px]">${s.time || ''}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportCompletedCSV() {
+      const list = getCompletedStudents();
+      if (list.length === 0) {
+        alert('ยังไม่มีข้อมูลนักศึกษาสำหรับดาวน์โหลดครับ');
+        return;
+      }
+
+      let csv = '\uFEFF';
+      csv += 'รหัสนักศึกษา,ชื่อ-นามสกุล,Section,Token,วันที่สำเร็จ,เวลาที่สำเร็จ\n';
+      list.forEach(s => {
+        csv += `"${s.id}","${s.name}","${s.section || 'Sec 1'}","${s.token}","${s.date || ''}","${s.time || ''}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'รายชื่อนักศึกษา_ผ่านบทที่3.csv';
+      link.click();
+    }
+
+    // Google Sheet Webhook Sync Modal
+    function toggleSheetSyncModal() {
+      const modal = document.getElementById('sheetSyncModal');
+      modal.classList.toggle('hidden');
+      const input = document.getElementById('inputSheetWebhook');
+      if (input) input.value = localStorage.getItem('GOOGLE_SHEET_WEBHOOK') || '';
+    }
+
+    function saveSheetWebhook() {
+      const url = document.getElementById('inputSheetWebhook').value.trim();
+      localStorage.setItem('GOOGLE_SHEET_WEBHOOK', url);
+      alert('บันทึกลิงก์ Google Sheets เรียบร้อยแล้ว!');
+      toggleSheetSyncModal();
     }
 
     window.onload = function() {
-      const savedKey = localStorage.getItem('GEMINI_API_KEY');
-      if (savedKey) {
-        document.getElementById('instructorApiKeyInput').placeholder = '•••••••••••••••••••••••••••• (บันทึกคีย์แล้ว)';
-      }
+      renderCompletedStudents();
     };
   </script>
+
+  <!-- Google Sheet Sync Modal -->
+  <div id="sheetSyncModal" class="hidden fixed inset-0 bg-slate-900/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+          <span>🔗</span> เชื่อมต่อผลคะแนนเข้า Google Sheets อัตโนมัติ
+        </h3>
+        <button onclick="toggleSheetSyncModal()" class="text-slate-400 hover:text-slate-700 text-lg font-bold">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+        หากต้องการให้นักศึกษาทำจากโทรศัพท์ที่บ้าน แล้วชื่อ <strong>ยิงตรงเข้า Google Sheets ของอาจารย์ทันที</strong> สามารถนำ Web App URL ของ Google Apps Script มาวางที่นี่ครับ:
+      </p>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Google Apps Script Webhook URL</label>
+          <input type="text" id="inputSheetWebhook" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 p-3 rounded-xl text-[11px] text-slate-600 space-y-1">
+          <strong class="text-slate-800 block">💡 โค้ด Apps Script ใน Google Sheets (ประมาณ 6 บรรทัด):</strong>
+          <pre class="bg-slate-900 text-emerald-400 p-2 rounded-lg font-mono text-[10px] overflow-x-auto">function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
+    .appendRow([new Date(), data.id, data.name, data.section, data.token]);
+  return ContentService.createTextOutput("OK");
+}</pre>
+        </div>
+
+        <button onclick="saveSheetWebhook()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold py-3 rounded-xl shadow transition">
+          บันทึกการเชื่อมต่อ
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
